@@ -9,7 +9,7 @@ const wrapAsync = (fn, wrapper) => (...args) => {
   const cb = args.pop();
   fn(...args, (err, data) => {
     cb(err, data);
-    wrapper(data); // callback must take care of errors
+    wrapper(err, data); // callback must take care of errors
   });
 };
 
@@ -29,8 +29,8 @@ const once = fn => (...args) => {
 // returns trigger function to start execution
 const parallelAsync = (fns, done, args) => {
   const returned = [];
-  const stack = fns.map(fn => wrapAsync(fn, data => {
-    returned.push({ name: fn.name, data });
+  const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
+    returned.push({ name: fn.name, returned: { err, data } });
     if (returned.length === stack.length) done(returned);
   }));
   return once(() => stack.forEach((fn, i) => fn(...args[i])));
@@ -53,4 +53,4 @@ const args = [
 ];
 
 // Call example
-parallelAsync(fns, returned => console.dir({ returned }), args)();
+parallelAsync(fns, ret => console.dir({ ret }, { depth: null }), args)();

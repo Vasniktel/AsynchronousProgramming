@@ -9,7 +9,7 @@ const wrapAsync = (fn, wrapper) => (...args) => {
   const cb = args.pop();
   fn(...args, (err, data) => {
     cb(err, data);
-    wrapper(data); // callback must take care of errors
+    wrapper(err, data); // callback must take care of errors
   });
 };
 
@@ -30,8 +30,8 @@ const once = fn => (...args) => {
 const sequentialAsync = (fns, done, args) => {
   const returned = [];
   const pars = args.slice();
-  const stack = fns.map(fn => wrapAsync(fn, data => {
-    returned.push({ name: fn.name, data });
+  const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
+    returned.push({ name: fn.name, returned: { err, data } });
     if (stack.length) stack.shift()(...pars.shift());
     else done(returned);
   }));
@@ -55,4 +55,4 @@ const args = [
 ];
 
 // Call example
-sequentialAsync(fns, returned => console.dir({ returned }), args)();
+sequentialAsync(fns, ret => console.dir({ ret }, { depth: null }), args)();
