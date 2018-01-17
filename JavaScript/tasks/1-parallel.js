@@ -28,10 +28,10 @@ const once = fn => (...args) => {
 // prepares fns for parallel execution
 // returns trigger function to start execution
 const parallelAsync = (fns, args, done) => {
-  const returned = [];
+  const returned = new Map();
   const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
-    returned.push({ name: fn.name, returned: { err, data } });
-    if (returned.length === stack.length) done(returned);
+    returned.set(fn.name, { err, data });
+    if (returned.size === stack.length) done(returned);
   }));
   return once(() => stack.forEach((fn, i) => fn(...args[i])));
 };

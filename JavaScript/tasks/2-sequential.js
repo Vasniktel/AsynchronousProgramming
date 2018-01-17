@@ -28,10 +28,10 @@ const once = fn => (...args) => {
 // prepares fns for sequential execution
 // returns trigger function to start execution
 const sequentialAsync = (fns, args, done) => {
-  const returned = [];
+  const returned = new Map();
   const pars = args.slice();
   const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
-    returned.push({ name: fn.name, returned: { err, data } });
+    returned.set(fn.name, { err, data });
     if (stack.length) stack.shift()(...pars.shift());
     else done(returned);
   }));
