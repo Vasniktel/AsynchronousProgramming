@@ -27,7 +27,7 @@ const once = fn => (...args) => {
 //   args.length === fns.length
 // prepares fns for sequential execution
 // returns trigger function to start execution
-const sequentialAsync = (fns, done, args) => {
+const sequentialAsync = (fns, args, done) => {
   const returned = [];
   const pars = args.slice();
   const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
@@ -55,4 +55,4 @@ const args = [
 ];
 
 // Call example
-sequentialAsync(fns, ret => console.dir({ ret }, { depth: null }), args)();
+sequentialAsync(fns, args, ret => console.dir({ ret }, { depth: null }))();

@@ -27,7 +27,7 @@ const once = fn => (...args) => {
 //   args.length === fns.length
 // prepares fns for parallel execution
 // returns trigger function to start execution
-const parallelAsync = (fns, done, args) => {
+const parallelAsync = (fns, args, done) => {
   const returned = [];
   const stack = fns.map(fn => wrapAsync(fn, (err, data) => {
     returned.push({ name: fn.name, returned: { err, data } });
@@ -53,4 +53,4 @@ const args = [
 ];
 
 // Call example
-parallelAsync(fns, ret => console.dir({ ret }, { depth: null }), args)();
+parallelAsync(fns, args, ret => console.dir({ ret }, { depth: null }))();
